@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map My PSIT</title>
+    <link rel="icon" href="./assets/dlogo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /> 
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
+    <style>
+      body {
+        font-family: "Montserrat", sans-serif;
+        margin: 0;
+        background-color: black;
+        color: white;
+        overflow: hidden;
+        font-weight: 500;
+      }
+
+      .main {
+        display: flex;
+        height: 100vh;
+        padding: 0.5rem;
+      }
+
+      .sidebar {
+        background-color: black;
+        width: 350px;
+        border-radius: 1rem;
+        margin-right: 0.5rem;
+      }
+
+      .main-content {
+        background-color: #121212;
+        flex: 1;
+        border-radius: 1rem;
+        overflow: auto;
+      }
+
+      .music-player {
+        background-color: black;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        height: 20px;
+      }
+
+      a {
+        text-decoration: none;
+        color: white;
+      }
+
+      .nav {
+        background-color: #121212;
+        border-radius: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100px;
+        padding: 0.5rem 0.75rem;
+      }
+
+      .nav-option {
+        line-height: 2.5rem;
+        opacity: 0.7;
+        padding: 0.5rem 0.75rem;
+        transition: opacity 0.3s ease;
+      }
+
+      .nav-option:hover {
+        opacity: 1;
+      }
+
+      .nav-option i {
+        font-size: 1.25rem;
+      }
+
+      .nav-option a {
+        font-size: 1rem;
+        margin-left: 1rem;
+      }
+
+      .library {
+        background-color: #121212;
+        border-radius: 1rem;
+        height: calc(100vh - 100px);
+        margin-top: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      .option {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .lib-option img {
+        height: 1.25rem;
+      }
+
+      .icons {
+        font-size: 1.25rem;
+        display: flex;
+      }
+
+      .icons i {
+        opacity: 0.7;
+        margin-right: 1rem;
+        transition: opacity 0.3s ease;
+      }
+
+      .icons i:hover {
+        opacity: 1;
+      }
+
+      .box {
+        background-color: #232323;
+        border-radius: 0.75rem;
+        margin: 0.75rem 0;
+        padding: 0.75rem 1rem;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease;
+      }
+
+      .box-p1 {
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .badge {
+        border: none;
+        background-color: white;
+        border-radius: 100px;
+        padding: 0.25rem 1rem;
+        font-weight: 700;
+        margin-top: 0.5rem;
+        height: auto;
+        width: fit-content;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .badge:hover {
+        background-color: #f0f0f0;
+      }
+
+      .badge:focus {
+        outline: none;
+        box-shadow: 0 0 5px 2px #00d8ff;
+      }
+
+      .sticky-nav {
+        position: sticky;
+        top: 0;
+        background-color: #121212;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        z-index: 10;
+      }
+
+      .sticky-nav-icons {
+        margin-left: 1rem;
+      }
+
+      .sticky-nav-options {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .nav-item {
+        margin-right: 1rem;
+      }
+
+      .dark-badge {
+        background-color: black;
+        color: white;
+      }
+
+      @media (max-width: 1000px) {
+        .hide {
+          display: none;
+        }
+      }
+
+      .map {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+      }
+
+      .map img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .name-container {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #1c1c1c;
+        border-radius: 5px;
+        color: white;
+        max-height: 80px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .name-container.expanded {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .name-container a {
+        color: #00d8ff;
+        text-decoration: none;
+        font-size: 0.9rem;
+        display: block;
+        margin: 5px 0;
+      }
+
+      .name-container a:hover {
+        text-decoration: underline;
+      }
+
+      .search-bar {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .search-bar i {
+        color: #6c757d;
+        margin-right: 10px;
+      }
+
+      .search-bar input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        background-color: #ffffff;
+        font-size: 14px;
+        margin-right: 10px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .search-bar input::placeholder {
+        color: #adb5bd;
+      }
+
+      .search-bar button {
+        padding: 8px 16px;
+        font-size: 14px;
+        color: white;
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .search-bar button:hover {
+        background-color: #0056b3;
+      }
+
+      #lib-search-results {
+        padding: 10px;
+        border: 1px solid #e9ecef;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      #lib-search-results a {
+        text-decoration: none;
+        color: #007bff;
+        display: block;
+        padding: 8px;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      #lib-search-results a:hover {
+        background-color: #f1f3f5;
+        border-radius: 4px;
+      }
+
+      #lib-search-results a:last-child {
+        border-bottom: none;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <div class="main">
+      <div class="sidebar">
+        <div class="nav">
+          <div class="nav-option" style="opacity: 1;">
+             <i class="fa-solid fa-house"></i>
+             <a href="#">Home </a>
+          </div>
+          <div class="lib-option-container">
+            <div class="lib-option nav-option search-bar">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input 
+                type="text" 
+                id="lib-search-input" 
+                placeholder="Search locations (e.g., Hostel A, Cafe)" 
+              />
+              <button id="lib-search-btn" class="badge">Search</button>
+            </div>
+            <div id="lib-search-results"></div>
+          </div>
+        </div>
+        <div class="library">
+          <div class="option">
+            <div class="lib-option nav-option">
+              <i class="fa-solid fa-map"></i>
+              <a href="#">Blocks</a>
+           </div>
+          </div>
+          <div class="lib-box">
+            <div class="box">
+              <p class="box-p1">Main Building</p>
+              <button class="badge">Show All</button>
+            </div>
+            <div class="box">
+              <p class="box-p1">Cafe</p>
+              <button class="badge">Show All</button>
+            </div>
+            <div class="box">
+              <p class="box-p1">Grounds</p>
+              <button class="badge">Show All</button>
+            </div>
+            <div class="box">
+              <p class="box-p1">Hostels</p>
+              <button class="badge">Show All</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="main-content">
+        <div class="sticky-nav">
+          <div class="sticky-nav-icons">
+            <img src="./assets/backward_icon.png" alt="back icon">
+          <img src="./assets/forward_icon.png" class="hide" alt="forward icon">
+        </div>
+        <div class="sticky-nav-options">
+          <button class="badge nav-item dark-badge"><i class="fa-regular fa-circle-down" style="margin-right: 5px;"></i>The One who makes</button>
+          <i class="fa-solid fa-user nav-item"></i>
+        </div>
+        </div>
+        <div class="map">
+          <img src="map.jpg" alt="map">
+        </div>
+      </div>
+      <div class="music-player">About us</div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const buttons = document.querySelectorAll(".badge");
+        const searchInput = document.getElementById("lib-search-input");
+        const searchResults = document.getElementById("lib-search-results");
+
+        const categories = {
+          "Main Building": [
+            { name: "AA Block", link: "https://www.google.com/maps/place/PSIT+AA-Block/@26.4493143,80.1913106,187m/data=!3m1!1e3!4m6!3m5!1s0x399c49f9909915e1:0x6dff33acd8818ecd!8m2!3d26.4493143!4d80.1921527!16s%2Fg%2F11g022tny7?entry=tts&g_ep=EgoyMDI1MDEyMC4wIPu8ASoASAFQAw%3D%3D" },
+            // ... (keep all other location entries here)
+          ],
+          // ... (keep other category definitions here)
+        };
+
+        buttons.forEach((button) => {
+            button.addEventListener("click", () => {
+                const category = button.previousElementSibling.textContent.trim();
+                let nameContainer = button.nextElementSibling;
+                
+                if (!nameContainer || !nameContainer.classList.contains("name-container")) {
+                    nameContainer = document.createElement("div");
+                    nameContainer.classList.add("name-container");
+                    button.parentNode.appendChild(nameContainer);
+                }
+
+                nameContainer.innerHTML = "";
+                const names = categories[category] || [];
+                names.forEach(({ name, link }) => {
+                    const nameItem = document.createElement("a");
+                    nameItem.textContent = name;
+                    nameItem.href = link;
+                    nameItem.target = "_blank";
+                    nameContainer.appendChild(nameItem);
+                });
+
+                if (nameContainer.style.display === "none" || nameContainer.style.display === "") {
+                    nameContainer.style.display = "block";
+                    nameContainer.scrollIntoView({ behavior: "smooth", block: "center" });
+                } else {
+                    nameContainer.style.display = "none";
+                }
+            });
+        });
+
+        searchInput.addEventListener("input", () => {
+            const query = searchInput.value.trim().toLowerCase();
+            searchResults.innerHTML = "";
+
+            if (query === "") {
+                searchResults.style.display = "none";
+                return;
+            }
+
+            let matches = [];
+            for (const [category, locations] of Object.entries(categories)) {
+                locations.forEach(({ name, link }) => {
+                    if (name.toLowerCase().includes(query)) {
+                        matches.push({ name, link, category });
+                    }
+                });
+            }
+
+            if (matches.length > 0) {
+                matches.forEach(({ name, link, category }) => {
+                    const resultItem = document.createElement("a");
+                    resultItem.textContent = `${name} (${category})`;
+                    resultItem.href = link;
+                    resultItem.target = "_blank";
+                    searchResults.appendChild(resultItem);
+                });
+                searchResults.style.display = "block";
+            } else {
+                searchResults.style.display = "none";
+            }
+        });
+      });
+    </script>
+  </body>
+</html>
